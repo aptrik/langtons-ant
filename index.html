@@ -2,33 +2,7 @@
 <html>
   <head>
     <title>Langton's Ant</title>
-    <style type="text/css">
-body {
-  background: #242323; /* mörkgrå */
-}
-
-h1 {
-  color: #fcd116; /* sverigegul */
-  text-align: center;
-}
-
-#steps {
-  color: #fcd116; /* sverigegul */
-  font-size: 14px;
-  font-family: 'Lucida Grande', Verdana, Arial, Helvetica, Sans-Serif;
-  text-align: center;
-}
-
-#board {
-  background: #fff;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
-    </style>
+    <link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
     <!--[if lt IE 9]>
         <script src="excanvas.js"></script>
     <![endif]-->
@@ -44,7 +18,7 @@ window.onload = function() {
 
     window.onkeydown = function(e) {
        var key = e.keyCode;
-       if (key == 13 || key == 32) {
+       if (key == 13 || key == 32 || key == 38 || key == 40) {
            board.step();
            steps.innerHTML = board.steps;
        }
@@ -55,6 +29,8 @@ window.onload = function() {
   <body>
     <h1>Langton's Ant</h1>
     <p id="steps">Steps: <span id="stepCounter"></span></p>
-    <canvas id="board"></canvas>
+    <div id="board-container">
+      <canvas id="board"></canvas>
+    </div>
   </body>
 </html>

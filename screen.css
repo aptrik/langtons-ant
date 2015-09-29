@@ -1,0 +1,25 @@
+body {
+    background: #242323;
+    font-size: 14px;
+    color: #fcd116;
+}
+
+h1 {
+    text-align: center;
+    font-size: 300%;
+}
+
+#steps {
+    text-align: center;
+}
+
+#board-container {
+    width: 100%;
+    text-align:center;
+}
+
+#board {
+    display: inline;
+    background: #fff;
+    margin: 0 auto;
+}
