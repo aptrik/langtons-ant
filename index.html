@@ -3,34 +3,33 @@
   <head>
     <title>Langton's Ant</title>
     <link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
-    <!--[if lt IE 9]>
-        <script src="excanvas.js"></script>
-    <![endif]-->
     <script type="text/javascript" language="javascript" src="board.js"></script>
     <script type="text/javascript" language="javascript">
 window.onload = function() {
-    var board = new Board(document, "board", 600);
-    board.draw();
+    var board = new Board(document, "board", "movement", 600);
     board.play(10050);
 
-    var steps = document.getElementById("stepCounter");
+    var steps = document.getElementById("counter");
     steps.innerHTML = board.steps;
 
     window.onkeydown = function(e) {
-       var key = e.keyCode;
-       if (key == 13 || key == 32 || key == 38 || key == 40) {
-           board.step();
-           steps.innerHTML = board.steps;
-       }
+        var key = e.keyCode;
+        if (key == 13 || key == 32 || key == 39 || key == 40) {
+            board.step();
+        }
+        // else if (key == 37 || key == 38) {
+        // }
+        steps.innerHTML = board.steps;
     };
 };
     </script>
   </head>
   <body>
     <h1>Langton's Ant</h1>
-    <p id="steps">Steps: <span id="stepCounter"></span></p>
-    <div id="board-container">
+    <p id="steps">Steps: <span id="counter"></span></p>
+    <div id="stage">
       <canvas id="board"></canvas>
+      <canvas id="movement"></canvas>
     </div>
   </body>
 </html>

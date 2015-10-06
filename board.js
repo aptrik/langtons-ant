@@ -13,10 +13,10 @@ var COLOR = {WHITE: 0, BLACK: 1};
 var RGB = {0: "#000", 1: "#fff"};
 var HEADING = {UP: 0, RIGHT: 1, DOWN: 2, LEFT: 3};
 
-function Board(document, id, boardSize) {
+function Board(document, background_id, foreground_id, boardSize) {
     this.boardSize = boardSize;
-    this.canvas = document.getElementById(id);
-    this.context = this.canvas.getContext("2d");
+    this.bg_canvas = document.getElementById(background_id);
+    this.fg_canvas = document.getElementById(foreground_id);
     this.padding = 15;
     this.cellSize = 10;
     this.cells = null;
@@ -25,33 +25,39 @@ function Board(document, id, boardSize) {
     this.pos = null;
     this.heading = HEADING.UP;
     this.steps = 0;
+    this.drawBoard();
 }
 
-Board.prototype.draw = function() {
-    this.canvas.width = this.boardSize + (this.padding * 2) + 1;
-    this.canvas.height = this.canvas.width;
+Board.prototype.drawBoard = function() {
+    this.bg_canvas.width = this.boardSize + (this.padding * 2) + 1;
+    this.bg_canvas.height = this.bg_canvas.width;
+    this.fg_canvas.width = this.bg_canvas.width;
+    this.fg_canvas.height = this.bg_canvas.height;
 
-    this.context.strokeStyle = GRID_COLOR;
+    this.bg_context = this.bg_canvas.getContext("2d");
+    this.fg_context = this.fg_canvas.getContext("2d");
+
+    this.bg_context.strokeStyle = GRID_COLOR;
     var rows = 0, columns = 0;
     for (var x = 0; x <= this.boardSize; x += this.cellSize) {
         columns += 1;
-        this.context.moveTo(
+        this.bg_context.moveTo(
             0.5 + x + this.padding,
             this.padding);
-        this.context.lineTo(
+        this.bg_context.lineTo(
             0.5 + x + this.padding,
             this.boardSize + this.padding);
     }
     for (var y = 0; y <= this.boardSize; y += this.cellSize) {
         rows += 1;
-        this.context.moveTo(
+        this.bg_context.moveTo(
             this.padding,
             0.5 + y + this.padding);
-        this.context.lineTo(
-            this.boardSize + this.padding,
+        this.bg_context.lineTo(
+            this.boardSize + this.padding - 1,
             0.5 + y + this.padding);
     }
-    this.context.stroke();
+    this.bg_context.stroke();
 
     this.cells = new Array(rows);
     for (var i = 0; i < rows; i++) {
@@ -63,22 +69,23 @@ Board.prototype.draw = function() {
     this.pos = [parseInt(rows / 2), parseInt(columns / 2)];
     this.rows = rows;
     this.columns = columns;
+
+    this.drawAnt();
 };
 
 Board.prototype.play = function(steps) {
-    while (steps > 0) {
+    while (steps-- > 0) {
         this.step();
-        steps -= 1;
     }
 };
 
 Board.prototype.step = function() {
     var color = this.getCurrentColor();
     switch (color) {
-    case  COLOR.WHITE:
+    case COLOR.WHITE:
         this.turnRight();
         break;
-    case  COLOR.BLACK:
+    case COLOR.BLACK:
         this.turnLeft();
         break;
     }
@@ -89,23 +96,8 @@ Board.prototype.step = function() {
 };
 
 Board.prototype.drawAnt = function() {
-    var d;
-    switch (this.heading) {
-    case HEADING.UP:
-        d = [0, -1];
-        break;
-    case HEADING.RIGHT:
-        d = [1, 0];
-        break;
-    case HEADING.DOWN:
-        d = [0, 1];
-        break;
-    case HEADING.LEFT:
-        d = [-1, 0];
-        break;
-    }
-    this.context.fillStyle = ANT_COLOR;
-    this.context.fillRect(
+    this.fg_context.fillStyle = ANT_COLOR;
+    this.fg_context.fillRect(
         this.padding + this.pos[0] * this.cellSize,
         this.padding + this.pos[1] * this.cellSize,
         this.cellSize,
@@ -116,8 +108,9 @@ Board.prototype.getCurrentColor = function() {
     return this.cells[this.pos[0]][this.pos[1]];
 };
 
-Board.prototype.flipColor = function(color) {
-    switch (color) {
+Board.prototype.flipColor = function(oldColor) {
+    var color;
+    switch (oldColor) {
     case COLOR.WHITE:
         color = COLOR.BLACK;
         break;
@@ -130,18 +123,13 @@ Board.prototype.flipColor = function(color) {
     var x = this.padding + this.pos[0] * this.cellSize;
     var y = this.padding + this.pos[1] * this.cellSize;
 
-    // this.context.beginPath();
-    // this.context.strokeStyle = GRID_COLOR;
-    // this.context.moveTo(x, y);
-    // this.context.lineTo(1 + x + this.cellSize, y + 1);
-    // this.context.lineTo(1 + x + this.cellSize, y + this.cellSize + 1);
-    // this.context.lineTo(1 + x, y + this.cellSize + 1);
-    // this.context.lineTo(1 + x, y + 1);
-    // this.context.stroke();
-
-    var rgbColor = RGB[color];
-    this.context.fillStyle = rgbColor;
-    this.context.fillRect(x, y, this.cellSize, this.cellSize);
+    if (oldColor === COLOR.WHITE) {
+        this.fg_context.clearRect(x, y, this.cellSize, this.cellSize);
+    }
+    else {
+        this.fg_context.fillStyle = RGB[color];
+        this.fg_context.fillRect(x, y, this.cellSize, this.cellSize);
+    }
 };
 
 Board.prototype.moveForward = function() {

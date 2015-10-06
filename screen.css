@@ -1,25 +1,28 @@
 body {
     background: #242323;
-    font-size: 14px;
     color: #fcd116;
+    font-size: 14px;
 }
 
 h1 {
-    text-align: center;
     font-size: 300%;
 }
 
-#steps {
-    text-align: center;
+canvas {
+    position: absolute;
 }
 
-#board-container {
-    width: 100%;
-    text-align:center;
+#stage {
+    position: relative;
+    margin: 0 auto;
 }
 
 #board {
-    display: inline;
-    background: #fff;
-    margin: 0 auto;
+    z-index: 1;
+    background: white;
+}
+
+#movement {
+    z-index: 2;
+    background: transparent;
 }
