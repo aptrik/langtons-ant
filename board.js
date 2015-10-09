@@ -7,10 +7,12 @@
 //    move forward one unit.
 'use strict';
 
-var ANT_COLOR = "red";
-var GRID_COLOR = "#eee";
-var COLOR = {WHITE: 0, BLACK: 1};
-var RGB = {0: "#000", 1: "#fff"};
+var COLOR = {
+    WHITE: "#fff",
+    BLACK: "#000",
+    ANT: "#f00",
+    GRID: "#eee"
+};
 var HEADING = {UP: 0, RIGHT: 1, DOWN: 2, LEFT: 3};
 
 function Board(document, background_id, foreground_id, boardSize) {
@@ -37,7 +39,7 @@ Board.prototype.drawBoard = function() {
     this.bg_context = this.bg_canvas.getContext("2d");
     this.fg_context = this.fg_canvas.getContext("2d");
 
-    this.bg_context.strokeStyle = GRID_COLOR;
+    this.bg_context.strokeStyle = COLOR.GRID;
     var rows = 0, columns = 0;
     for (var x = 0; x <= this.boardSize; x += this.cellSize) {
         columns += 1;
@@ -73,13 +75,16 @@ Board.prototype.drawBoard = function() {
     this.drawAnt();
 };
 
-Board.prototype.play = function(steps) {
+Board.prototype.step = function(steps) {
+    if (steps === undefined) {
+        steps = 1;
+    }
     while (steps-- > 0) {
-        this.step();
+        this._step();
     }
 };
 
-Board.prototype.step = function() {
+Board.prototype._step = function() {
     var color = this.getCurrentColor();
     switch (color) {
     case COLOR.WHITE:
@@ -96,12 +101,10 @@ Board.prototype.step = function() {
 };
 
 Board.prototype.drawAnt = function() {
-    this.fg_context.fillStyle = ANT_COLOR;
-    this.fg_context.fillRect(
-        this.padding + this.pos[0] * this.cellSize,
-        this.padding + this.pos[1] * this.cellSize,
-        this.cellSize,
-        this.cellSize);
+    this.fg_context.fillStyle = COLOR.ANT;
+    var x = this.padding + this.pos[0] * this.cellSize;
+    var y = this.padding + this.pos[1] * this.cellSize;
+    this.fg_context.fillRect(x, y, this.cellSize, this.cellSize);
 };
 
 Board.prototype.getCurrentColor = function() {
@@ -123,11 +126,11 @@ Board.prototype.flipColor = function(oldColor) {
     var x = this.padding + this.pos[0] * this.cellSize;
     var y = this.padding + this.pos[1] * this.cellSize;
 
-    if (oldColor === COLOR.WHITE) {
+    if (oldColor === COLOR.BLACK) {
         this.fg_context.clearRect(x, y, this.cellSize, this.cellSize);
     }
     else {
-        this.fg_context.fillStyle = RGB[color];
+        this.fg_context.fillStyle = color;
         this.fg_context.fillRect(x, y, this.cellSize, this.cellSize);
     }
 };
@@ -149,11 +152,6 @@ Board.prototype.moveForward = function() {
         break;
     }
     this.pos = [this.pos[0] + d[0], this.pos[1] + d[1]];
-    var inside = this.pos[0] >= 0 &&
-        this.pos[0] < this.columns &&
-        this.pos[1] > 0 &&
-        this.pos[1] < this.rows;
-    return inside;
 };
 
 Board.prototype.turnLeft = function() {
@@ -187,5 +185,18 @@ Board.prototype.turnRight = function() {
     case HEADING.LEFT:
         this.heading = HEADING.UP;
         break;
+    }
+};
+
+Board.prototype.headingArrow = function() {
+    switch (this.heading) {
+    case HEADING.UP:
+        return "&#8593;";
+    case HEADING.RIGHT:
+        return "&#8594;";
+    case HEADING.DOWN:
+        return "&#8595;";
+    case HEADING.LEFT:
+        return "&#8592;";
     }
 };
