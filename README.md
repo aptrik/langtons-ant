@@ -1,6 +1,6 @@
 # Langton's Ant
 
-For background please read [wikipedia article](https://en.wikipedia.org/wiki/Langton's_ant).
+For background please read the [wikipedia article](https://en.wikipedia.org/wiki/Langton's_ant).
 
 View [live demo](https://aptrik.github.io/langtons-ant/).
 
