@@ -15,10 +15,10 @@ var COLOR = {
 };
 var HEADING = {UP: 0, RIGHT: 1, DOWN: 2, LEFT: 3};
 
-function Board(document, background_id, foreground_id, boardSize) {
+function Board(background_canvas, foreground_canvas, boardSize) {
     this.boardSize = boardSize;
-    this.bg_canvas = document.getElementById(background_id);
-    this.fg_canvas = document.getElementById(foreground_id);
+    this.bg_canvas = background_canvas;
+    this.fg_canvas = foreground_canvas;
     this.padding = 15;
     this.cellSize = 10;
     this.cells = null;

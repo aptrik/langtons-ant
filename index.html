@@ -6,7 +6,10 @@
     <script type="text/javascript" language="javascript" src="board.js"></script>
     <script type="text/javascript" language="javascript">
 window.onload = function() {
-    var board = new Board(document, "board", "movement", 600);
+    var bg = document.getElementById("board");
+    var fg = document.getElementById("movement");
+
+    var board = new Board(bg, fg, 600);
     board.step(9990);
 
     var steps = document.getElementById("counter");
