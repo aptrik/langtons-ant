@@ -5,38 +5,71 @@
     <link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
     <script type="text/javascript" language="javascript" src="board.js"></script>
     <script type="text/javascript" language="javascript">
-window.onload = function() {
-    var bg = document.getElementById("board");
-    var fg = document.getElementById("movement");
+     var board;
+     var steps;
+     var heading;
 
-    var board = new Board(bg, fg, 600);
-    board.step(9990);
+     function setup() {
+         board = new Board(
+             document.getElementById("board"),
+             document.getElementById("movement"),
+             600);
+         steps = document.getElementById("counter");
+         heading = document.getElementById("heading");
+         update();
+     }
 
-    var steps = document.getElementById("counter");
-    steps.innerHTML = board.steps;
+     function update() {
+         steps.innerHTML = board.steps;
+         heading.innerHTML = board.headingArrow();
+         heading.style.backgroundColor = board.getCurrentColor();
+     }
 
-    var heading = document.getElementById("heading");
-    heading.innerHTML = board.headingArrow();
-    heading.style.backgroundColor = board.getCurrentColor();
+     function step(count) {
+         board.step(count);
+         update();
+     }
 
-    window.onkeydown = function(e) {
-        var key = e.keyCode;
-        if (key == 13 || key == 32 || key == 39 || key == 40) {
-            board.step(1);
-        }
-        // else if (key == 37 || key == 38) {
-        //    board.step(-1); // TODO
-        // }
-        steps.innerHTML = board.steps;
-        heading.innerHTML = board.headingArrow();
-        heading.style.backgroundColor = board.getCurrentColor();
-    };
-};
+     function init() {
+         setup();
+         // step(9900);
+         update();
+         window.onkeydown = function(e) {
+             var key = e.keyCode;
+             switch (key) {
+                 case 48: // 0 (zero)
+                     setup();
+                     break;
+                 case 13: // enter
+                 case 32: // space
+                 case 39: // right arrow
+                     step(1);
+                     break;
+                 case 40: // down arrow
+                     step(10);
+                     break;
+                 case 34: // page down
+                     step(100);
+                     break;
+             }
+         };
+     }
+
+     window.addEventListener("load", init, false);
     </script>
   </head>
   <body>
     <h1>Langton's Ant</h1>
-    <p id="steps">Step: <span id="heading"></span> <span id="counter"></span></p>
+    <p id="steps">
+        <button type="button" onclick="setup();">Reset</button>
+        <button type="button" onclick="step(1);">Step 1</button>
+        <button type="button" onclick="step(10);">Step 10</button>
+        <button type="button" onclick="step(100);">Step 100</button>
+        <button type="button" onclick="step(1000);">Step 1000</button>
+        <button type="button" onclick="step(10000);">Step 10000</button>
+        <span id="counter"></span>
+        <span id="heading"></span>
+    </p>
     <div id="stage">
       <canvas id="board"></canvas>
       <canvas id="movement"></canvas>

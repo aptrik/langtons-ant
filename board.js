@@ -13,7 +13,7 @@ var COLOR = {
     ANT: "#f00",
     GRID: "#eee"
 };
-var HEADING = {UP: 0, RIGHT: 1, DOWN: 2, LEFT: 3};
+var HEADING = {UP: 270, RIGHT: 180, DOWN: 0, LEFT: 90};
 
 function Board(background_canvas, foreground_canvas, boardSize) {
     this.boardSize = boardSize;
@@ -25,9 +25,11 @@ function Board(background_canvas, foreground_canvas, boardSize) {
     this.rows = null;
     this.columns = null;
     this.pos = null;
+    this.inside = true;
     this.heading = HEADING.UP;
     this.steps = 0;
     this.drawBoard();
+    this.drawAnt();
 }
 
 Board.prototype.drawBoard = function() {
@@ -40,9 +42,10 @@ Board.prototype.drawBoard = function() {
     this.fg_context = this.fg_canvas.getContext("2d");
 
     this.bg_context.strokeStyle = COLOR.GRID;
-    var rows = 0, columns = 0;
+    this.rows = 0;
+    this.columns = 0;
     for (var x = 0; x <= this.boardSize; x += this.cellSize) {
-        columns += 1;
+        this.columns += 1;
         this.bg_context.moveTo(
             0.5 + x + this.padding,
             this.padding);
@@ -51,7 +54,7 @@ Board.prototype.drawBoard = function() {
             this.boardSize + this.padding);
     }
     for (var y = 0; y <= this.boardSize; y += this.cellSize) {
-        rows += 1;
+        this.rows += 1;
         this.bg_context.moveTo(
             this.padding,
             0.5 + y + this.padding);
@@ -61,18 +64,22 @@ Board.prototype.drawBoard = function() {
     }
     this.bg_context.stroke();
 
-    this.cells = new Array(rows);
-    for (var i = 0; i < rows; i++) {
-        this.cells[i] = new Array(columns);
-        for (var j = 0; j < columns; j++) {
+    this.cells = new Array(this.rows);
+    for (var i = 0; i < this.rows; i++) {
+        this.cells[i] = new Array(this.columns);
+        for (var j = 0; j < this.columns; j++) {
             this.cells[i][j] = COLOR.WHITE;
         }
     }
-    this.pos = [parseInt(rows / 2), parseInt(columns / 2)];
-    this.rows = rows;
-    this.columns = columns;
+    this.pos = [parseInt(this.rows / 2), parseInt(this.columns / 2)];
+};
 
-    this.drawAnt();
+Board.prototype.drawAnt = function() {
+    var ctx = this.fg_context;
+    ctx.fillStyle = COLOR.ANT;
+    var x = this.padding + this.pos[0] * this.cellSize;
+    var y = this.padding + this.pos[1] * this.cellSize;
+    ctx.fillRect(x, y, this.cellSize, this.cellSize);
 };
 
 Board.prototype.step = function(steps) {
@@ -85,26 +92,20 @@ Board.prototype.step = function(steps) {
 };
 
 Board.prototype._step = function() {
-    var color = this.getCurrentColor();
-    switch (color) {
-    case COLOR.WHITE:
-        this.turnRight();
-        break;
-    case COLOR.BLACK:
-        this.turnLeft();
-        break;
+    if (this.inside) {
+        var color = this.getCurrentColor();
+        switch (color) {
+        case COLOR.WHITE:
+            this.turnRight();
+            break;
+        case COLOR.BLACK:
+            this.turnLeft();
+            break;
+        }
+        this.flipColor(color);
+        this.moveForward();
+        this.drawAnt();
     }
-    this.flipColor(color);
-    this.moveForward();
-    this.drawAnt();
-    this.steps += 1;
-};
-
-Board.prototype.drawAnt = function() {
-    this.fg_context.fillStyle = COLOR.ANT;
-    var x = this.padding + this.pos[0] * this.cellSize;
-    var y = this.padding + this.pos[1] * this.cellSize;
-    this.fg_context.fillRect(x, y, this.cellSize, this.cellSize);
 };
 
 Board.prototype.getCurrentColor = function() {
@@ -151,7 +152,15 @@ Board.prototype.moveForward = function() {
         d = [-1, 0];
         break;
     }
-    this.pos = [this.pos[0] + d[0], this.pos[1] + d[1]];
+    var new_pos = [this.pos[0] + d[0], this.pos[1] + d[1]];
+    this.inside = new_pos[0] >= 0 &&
+        new_pos[0] < this.columns &&
+        new_pos[1] > 0 &&
+        new_pos[1] < this.rows;
+    if (this.inside) {
+        this.pos = new_pos;
+        this.steps += 1;
+    }
 };
 
 Board.prototype.turnLeft = function() {
