@@ -38,18 +38,22 @@
              var key = e.keyCode;
              switch (key) {
                  case 48: // 0 (zero)
+                 case 36: // home
                      setup();
                      break;
                  case 13: // enter
                  case 32: // space
+                 case 37: // left arrow
                  case 39: // right arrow
                      step(1);
                      break;
+                 case 38: // up arrow
                  case 40: // down arrow
                      step(10);
                      break;
+                 case 33: // page up
                  case 34: // page down
-                     step(100);
+                     step(e.metaKey || e.altKey ? 1000 : 100);
                      break;
              }
          };
