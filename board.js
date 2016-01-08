@@ -5,7 +5,8 @@
 //    move forward one unit.
 //  - On a black square, turn left 90°, flip the color of the square and
 //    move forward one unit.
-'use strict';
+/* jshint -W097 */
+"use strict";
 
 var COLOR = {
     WHITE: "#fff",
@@ -208,4 +209,5 @@ Board.prototype.headingArrow = function() {
     case HEADING.LEFT:
         return "&#8592;";
     }
+    return "";
 };
